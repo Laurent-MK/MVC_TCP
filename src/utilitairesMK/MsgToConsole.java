@@ -10,15 +10,17 @@ public class MsgToConsole {
 	
 	private int numConsoleDest;
 	private String msg;
+	private boolean ajoutNumMsg = true;
 	
 	/**
 	 * Constructeur
 	 */
-	public MsgToConsole(int numConsole, String msg) {
+	public MsgToConsole(int numConsole, boolean isAjoutNumMsg, String msg) {
 		
 		this.numConsoleDest = numConsole;
 //		this.msg = msg;
 		this.msg = String.copyValueOf(msg.toCharArray());
+		this.ajoutNumMsg = isAjoutNumMsg;
 	}
 	
 	
@@ -38,6 +40,10 @@ public class MsgToConsole {
 	
 	public int getNumConsoleDest() {
 		return numConsoleDest;
+	}
+	
+	public boolean isAjoutNumMsg() {
+		return ajoutNumMsg;
 	}
 	
 

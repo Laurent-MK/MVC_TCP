@@ -66,18 +66,28 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
     }
     
     
+    
     /**
      * Retirer un message present dans la queue du thread de console
+     * Les messages recus sont des objets du type MsgToConsole
+     * 
      */
 	@Override
 	public void consommer(Object msgConsole) throws InterruptedException {
 		String msg;
 
-		msg = "msg[" + ++numMsg + "] :  " + ((MsgToConsole)msgConsole).getMsg() + "\n";
+		++numMsg;
+		if ( ((MsgToConsole)msgConsole).isAjoutNumMsg() )
+			msg = "msg[" + numMsg + "] :  " + ((MsgToConsole)msgConsole).getMsg() + "\n";
+		else 
+			msg = ((MsgToConsole)msgConsole).getMsg() + "\n";
+			
+
 		((MsgToConsole)msgConsole).setMsg(msg);
 		
 		
-		// on a receptionné un message => on doit le passer à l'IHM pour qu'elle l'affiche dans la console systeme
+		// on a receptionne un message => on doit le passer à l'IHM pour qu'elle l'affiche 
+		// dans la console designee dans le message recu
 
 		/**
 		 * si le mode verbeux est active, on affiche égalezment les messages dans la console système
@@ -102,7 +112,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 	public void run() {
         try {
             while (true) {
-                consommer(queueMsg.take()); // attente de l'arrivee d'un produit dans la queue de message
+                consommer(queueMsg.take()); // attente de l'arrivee d'un message dans la queue de message
 //                Thread.sleep(0); // Pour debug : freiner les consommations des messages
             }
         } catch (InterruptedException ex) {

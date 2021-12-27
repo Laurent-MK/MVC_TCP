@@ -30,7 +30,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes {
 	private ControlerConsoleTCPServer controleur;
 	private JTextArea textAreaCentre = new JTextArea();
 	private JTextArea textAreaSud = new JTextArea();
-	private int tailleZoneAffichageConsole;
+	private int tailleZoneAffichageConsole = VALEUR_NUM_NON_DEFINIE;
 
 
 	
@@ -58,7 +58,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes {
 
 	
 	/**
-	 * 
+	 * obtenir la taille reservee pour l'affichage des messages dans la console
 	 */
 	public int getTailleBufferConsole() {
 		return tailleZoneAffichageConsole;
@@ -98,9 +98,9 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes {
 		JScrollPane scrollPaneSUD = new JScrollPane();
 		scrollPaneSUD.setPreferredSize(new Dimension(5, 150));
 		contentPane.add(scrollPaneSUD, BorderLayout.SOUTH);
+		scrollPaneSUD.setViewportView(textAreaSud);
 		textAreaSud.setText("on est au SUD");
 		textAreaCentre.append("\n");
-		scrollPaneSUD.setViewportView(textAreaSud);
 
 		
 		/**

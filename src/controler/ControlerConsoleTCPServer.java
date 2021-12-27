@@ -7,6 +7,17 @@ import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
 import view.IHM_ConsoleTCP;
 
+
+
+
+/**
+ * Classe de gestion de l'application de gestion d'une console distante
+ * la console disante est en ecoute sur une socket et affiche les message qu'elle recoit dans 
+ * une IHM locale
+ * 
+ * @author Balou
+ *
+ */
 public class ControlerConsoleTCPServer implements Controler, Constantes {
 	
     /**
@@ -21,13 +32,14 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
 	public static void main(String[] args) throws InterruptedException {
 		new ControlerConsoleTCPServer();	
 	}
+	
+	
 
 	/**
 	 * methode pour obtenir la reference pointant sur l'objet de console
 	 */
 	@Override
 	public ConsoleMK getConsole() {
-		// TODO Stub de la methode generee automatiquement
 		return this.console;
 	}
 	
@@ -54,19 +66,20 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
         
         new Thread(console).start();
         
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "creation et lancement du thread de console"));
-    	console.sendMsgToConsole((new MsgToConsole(NUM_CONSOLE_SYSTEM, "Message de debug")));
-    	console.sendMsgToConsole((new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement controleur")));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE,  ""));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "creation et lancement du thread de console"));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Lancement controleur"));
 
     	if (VERBOSE_ON)
     		System.out.println("Lancement controleur");
 
         /***
-         * boucle de surveillance des threads et affichage de leur etat dans l'IHM
+         * boucle principale de l'application : on attend de recevoir un message dans la socket
+         * quand un msg arrive, on l'envoit vers l'IHM pour qu'elle l'affiche
          */
         while(true) {
 
-        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, "ok, ca fonctionne"));
+        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, AJOUTER_NUM_MESSAGE,  "ok, ca fonctionne"));
         	
             try {
 				Thread.sleep(100);	// on s'endort durant un certain temps

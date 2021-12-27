@@ -4,12 +4,15 @@ public interface Constantes {
 	/**
 	 * Definition de toutes les constantes de l'application
 	 */
+	public static final int		VALEUR_NUM_NON_DEFINIE = 0;
+	
 	public static final boolean VERBOSE_ON = true;		// pour declencher les affichage dans la console systeme
 	
 	public static final int 	NB_CONSOLE = 5;				// taille de la message queue entre producteurs et consommateurs
 	public static final int 	TAILLE_MSG_Q_CONSOLE = 250;	// taille de la message queue du thread de console IHM
 	public static final int 	MAX_MSG_CONSOLE = 500;		// maximum de messages stockes dans la console
 	public static final int		TAILLE_BUFFER_CONSOLE = 500;
+	public static final boolean AJOUTER_NUM_MESSAGE = true;
 
 	
 	public static final int 	NUM_CONSOLE_SYSTEM = 0;		// numero de la console d'affichage
