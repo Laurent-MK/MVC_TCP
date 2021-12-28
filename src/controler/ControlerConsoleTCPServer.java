@@ -1,10 +1,12 @@
 package controler;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import model.Constantes;
 import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
+import utilitairesMK.ServeurSocket;
 import view.IHM_ConsoleTCP;
 
 
@@ -73,6 +75,17 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
     	if (VERBOSE_ON)
     		System.out.println("Lancement controleur");
 
+    	
+    	try {
+			ServeurSocket ServeurSoc = new ServeurSocket();
+		} catch (ClassNotFoundException e1) {
+			// TODO Bloc catch généré automatiquement
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Bloc catch généré automatiquement
+			e1.printStackTrace();
+		}
+    	
         /***
          * boucle principale de l'application : on attend de recevoir un message dans la socket
          * quand un msg arrive, on l'envoit vers l'IHM pour qu'elle l'affiche
@@ -82,7 +95,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
         	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, AJOUTER_NUM_MESSAGE,  "ok, ca fonctionne"));
         	
             try {
-				Thread.sleep(100);	// on s'endort durant un certain temps
+				Thread.sleep(1000);	// on s'endort durant un certain temps
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -1,12 +1,14 @@
 package utilitairesMK;
 
+import java.io.Serializable;
+
 /**
- * Classe permettant de construire des messages a destination de la console système
+ * Classe permettant de construire des messages a destination de la console systï¿½me
  * 
  * @author Balou
  *
  */
-public class MsgToConsole {
+public class MsgToConsole implements Serializable {
 	
 	private int numConsoleDest;
 	private String msg;
