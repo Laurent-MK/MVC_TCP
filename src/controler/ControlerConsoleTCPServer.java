@@ -77,7 +77,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
 
     	
     	try {
-			ServeurSocket ServeurSoc = new ServeurSocket();
+			ServeurSocket ServeurSoc = new ServeurSocket(this);
 		} catch (ClassNotFoundException e1) {
 			// TODO Bloc catch généré automatiquement
 			e1.printStackTrace();
