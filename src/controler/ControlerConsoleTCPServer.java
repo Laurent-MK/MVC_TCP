@@ -1,12 +1,14 @@
 package controler;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import model.Constantes;
 import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
-import utilitairesMK.ServeurSocket;
+import utilitairesMK.ServeurSocketTCP;
 import view.IHM_ConsoleTCP;
 
 
@@ -27,12 +29,18 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
      */
     private ConsoleMK console;	// l'objet pour manipuler la console
     private ArrayBlockingQueue<MsgToConsole> msgQ_Console;	// queue de message utilisee pour les envois de messages dans la console
+    private ServerSocket socketServer;
 
     	
 	private IHM_ConsoleTCP ihmApplication;
 
 	public static void main(String[] args) throws InterruptedException {
-		new ControlerConsoleTCPServer();	
+		try {
+			new ControlerConsoleTCPServer();
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Bloc catch généré automatiquement
+			e.printStackTrace();
+		}	
 	}
 	
 	
@@ -50,8 +58,12 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
 	
 	/**
 	 * Constructeur de la classe
+	 * @throws IOException 
+	 * @throws ClassNotFoundException 
 	 */
-	public ControlerConsoleTCPServer() {
+	public ControlerConsoleTCPServer() throws IOException, ClassNotFoundException {
+		
+		Socket soc;
 		
 		/**
 		 * creation de l'instance de l'IHM et affichage de la fenetre principale
@@ -77,28 +89,26 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
 
     	
     	try {
-			ServeurSocket ServeurSoc = new ServeurSocket(this);
-		} catch (ClassNotFoundException e1) {
-			// TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Bloc catch gÃ©nÃ©rÃ© automatiquement
-			e1.printStackTrace();
+			socketServer = new ServerSocket(NUM_PORT_SERVER);
+		} catch (Exception e) {
+			// TODO Bloc catch généré automatiquement
+			e.printStackTrace();
 		}
     	
-        /***
-         * boucle principale de l'application : on attend de recevoir un message dans la socket
-         * quand un msg arrive, on l'envoit vers l'IHM pour qu'elle l'affiche
-         */
-        while(true) {
 
-        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, AJOUTER_NUM_MESSAGE,  "ok, ca fonctionne"));
-        	
-            try {
-				Thread.sleep(1000);	// on s'endort durant un certain temps
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-        }
+    	while(true) {
+       		soc = socketServer.accept();
+        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Le serveur : " + soc + "a accepte une connexion avec un client"));
+  
+          	new Thread(new ServeurSocketTCP(this, soc)).start();
+
+          	/*Thread t =  new Thread(new ServeurSocketTCP(this, soc)).start();
+       		t.start();*/
+
+/*        	ServeurSocketTCP serveurSurSocket = new ServeurSocketTCP(this, socketServer, soc);
+        	Thread t = new Thread(serveurSurSocket);
+ */
+    	}
 	}
 }
+

@@ -7,6 +7,7 @@ public interface Constantes {
 	public static final int		VALEUR_NUM_NON_DEFINIE = 0;
 	
 	public static final boolean VERBOSE_ON = true;		// pour declencher les affichage dans la console systeme
+	public static final boolean	VERBOSE_ON_CONSOLE = false;
 	
 	public static final int 	NB_CONSOLE = 5;				// taille de la message queue entre producteurs et consommateurs
 	public static final int 	TAILLE_MSG_Q_CONSOLE = 250;	// taille de la message queue du thread de console IHM
@@ -17,6 +18,8 @@ public interface Constantes {
 	
 	public static final int 	NUM_CONSOLE_SYSTEM = 0;		// numero de la console d'affichage
 	public static final int 	NUM_CONSOLE_TCP = 1;		// numero de la console d'affichage
+	
+	public static final int		NUM_PORT_SERVER = 9999;
 	
 	public static final int 	NUMERO_THREAD_CONSOLE = 1;	// numero du thread de console
 

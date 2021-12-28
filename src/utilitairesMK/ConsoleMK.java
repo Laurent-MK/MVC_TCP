@@ -25,6 +25,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
     private IHM_ConsoleTCP ihmApplication;
     private int numeroProducteur;
     private static int numMsg = 0;
+   
 	
     /**
      * Constructeur
@@ -93,7 +94,7 @@ public class ConsoleMK implements Runnable, Consommateur, Constantes {
 		 * si le mode verbeux est active, on affiche égalezment les messages dans la console système
 		 * Dans le cas contraire, les messages de debug sont tous envoyés vers l'IHM
 		 */
-		if (VERBOSE_ON)
+		if (VERBOSE_ON_CONSOLE)
 			System.out.println(((MsgToConsole)msgConsole).getMsg());
 
 		// affichage dans la fenetre de l'IHM dediee aux messages de console
