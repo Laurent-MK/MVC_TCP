@@ -94,6 +94,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
 			// TODO Bloc catch généré automatiquement
 			e.printStackTrace();
 		}
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Lancement du serveur de socket " + socketServer));
     	
 
     	while(true) {
