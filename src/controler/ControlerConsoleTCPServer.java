@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import model.Constantes;
+import utilitairesMK.Constantes_SERVER_TCP;
 import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
 import utilitairesMK.ServeurSocketTCP;
@@ -22,7 +22,7 @@ import view.IHM_ConsoleTCP;
  * @author Balou
  *
  */
-public class ControlerConsoleTCPServer implements Controler, Constantes {
+public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_TCP {
 	
     /**
      *  proprietes pour la gestion des affichages dans la console
@@ -86,7 +86,6 @@ public class ControlerConsoleTCPServer implements Controler, Constantes {
 
     	if (VERBOSE_ON)
     		System.out.println("Lancement controleur");
-
     	
     	try {
 			socketServer = new ServerSocket(NUM_PORT_SERVER);

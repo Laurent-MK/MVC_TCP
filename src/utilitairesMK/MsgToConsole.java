@@ -8,11 +8,24 @@ import java.io.Serializable;
  * @author Balou
  *
  */
-public class MsgToConsole implements Serializable {
+public class MsgToConsole extends MessageMK implements Serializable, Constantes_SERVER_TCP {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6392917557600619944L;
+	/**
+	 * numero de verion pour garantir la serialization compatible avec l'objet qui va deserialiser 
+	 * cet objet.
+	 * Si les versions de compilateur et runtime JAVA ne sont pas compatibles en matière de serialization,
+	 * une exception InvalidClassException sera levée
+	 */
+//	private static final long serialVersionUID = 5097307363623042972L;
 	
 	private int numConsoleDest;
 	private String msg;
 	private boolean ajoutNumMsg = true;
+
 	
 	/**
 	 * Constructeur
@@ -23,7 +36,7 @@ public class MsgToConsole implements Serializable {
 //		this.msg = msg;
 		this.msg = String.copyValueOf(msg.toCharArray());
 		this.ajoutNumMsg = isAjoutNumMsg;
-	}
+		}
 	
 	
 	/**
@@ -47,6 +60,5 @@ public class MsgToConsole implements Serializable {
 	public boolean isAjoutNumMsg() {
 		return ajoutNumMsg;
 	}
-	
 
 }

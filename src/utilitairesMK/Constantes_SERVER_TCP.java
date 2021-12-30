@@ -1,6 +1,6 @@
-package model;
+package utilitairesMK;
 
-public interface Constantes {
+public interface Constantes_SERVER_TCP {
 	/**
 	 * Definition de toutes les constantes de l'application
 	 */
@@ -29,4 +29,7 @@ public interface Constantes {
 	public static final int 	PRIORITE_CONSOLE = 1;			// priorite du thread de console
 
 	public static final boolean MUTEX_CREE_LIBRE = true;		// si true, le Mutex est cree avec un jeton dispo. Si false, le Mutex est cree avec 0 jetons dedans
+	
+	public static final int 	TYPE_MESSAGE_SERVEUR = 1;
+	public static final int 	NUM_MSG_NOT_USED = 0;
 }

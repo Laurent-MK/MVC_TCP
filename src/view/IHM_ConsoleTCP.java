@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import controler.ControlerConsoleTCPServer;
-import model.Constantes;
+import utilitairesMK.Constantes_SERVER_TCP;
 import utilitairesMK.MsgToConsole;
 import javax.swing.JLabel;
 import java.awt.FlowLayout;
@@ -19,7 +19,7 @@ import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import javax.swing.SwingConstants;
 
-public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes {
+public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP {
 
 	/**
 	 * 

@@ -3,7 +3,6 @@ package utilitairesMK;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import model.Consommateur;
-import model.Constantes;
 import view.IHM_ConsoleTCP;
 
 
@@ -17,7 +16,7 @@ import view.IHM_ConsoleTCP;
  * @author balou
  *
  */
-public class ConsoleMK implements Runnable, Consommateur, Constantes {
+public class ConsoleMK implements Runnable, Consommateur, Constantes_SERVER_TCP {
 
 	// proprietes
 	private String nomConsole = "nom inconnu";
