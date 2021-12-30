@@ -1,4 +1,4 @@
-package controler;
+package controlerServeurCS;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,7 +9,7 @@ import utilitairesMK.Constantes_SERVER_TCP;
 import utilitairesMK.ConsoleMK;
 import utilitairesMK.MsgToConsole;
 import utilitairesMK.ServeurSocketTCP;
-import view.IHM_ConsoleTCP;
+import viewServeurCS.IHM_ConsoleTCP;
 
 
 

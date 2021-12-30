@@ -1,4 +1,4 @@
-package view;
+package viewServeurCS;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controler.ControlerConsoleTCPServer;
+import controlerServeurCS.ControlerConsoleTCPServer;
 import utilitairesMK.Constantes_SERVER_TCP;
 import utilitairesMK.MsgToConsole;
 import javax.swing.JLabel;

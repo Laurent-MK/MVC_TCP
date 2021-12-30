@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import controler.ControlerConsoleTCPServer;
+import controlerServeurCS.ControlerConsoleTCPServer;
 
 public class ServeurSocketTCP implements Constantes_SERVER_TCP, Runnable {
 

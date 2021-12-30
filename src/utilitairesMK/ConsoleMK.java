@@ -2,8 +2,8 @@ package utilitairesMK;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-import model.Consommateur;
-import view.IHM_ConsoleTCP;
+import modelServeurCS.Consommateur;
+import viewServeurCS.IHM_ConsoleTCP;
 
 
 

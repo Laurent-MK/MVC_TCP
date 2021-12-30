@@ -1,4 +1,4 @@
-package view;
+package viewServeurCS;
 
 import utilitairesMK.MsgToConsole;
 
