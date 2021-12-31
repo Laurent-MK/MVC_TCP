@@ -9,7 +9,10 @@ import javax.swing.border.EmptyBorder;
 
 import controlerServeurCS.ControlerConsoleTCPServer;
 import utilitairesMK.Constantes_SERVER_TCP;
-import utilitairesMK.MsgToConsole;
+import utilitairesMK_MVC.MsgToConsole;
+import viewMVC.IHM;
+
+//import utilitairesMK.MsgToConsole;
 import javax.swing.JLabel;
 import java.awt.FlowLayout;
 import javax.swing.JTextArea;

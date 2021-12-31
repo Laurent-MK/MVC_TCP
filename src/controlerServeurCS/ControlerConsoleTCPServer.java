@@ -5,10 +5,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import modelMVC.Constantes;
+import controlerMVC.Controler;
 import utilitairesMK.Constantes_SERVER_TCP;
-import utilitairesMK.ConsoleMK;
-import utilitairesMK.MsgToConsole;
 import utilitairesMK.ServeurSocketTCP;
+import utilitairesMK_MVC.ConsoleMK;
+import utilitairesMK_MVC.MsgToConsole;
 import viewServeurCS.IHM_ConsoleTCP;
 
 
@@ -22,7 +24,7 @@ import viewServeurCS.IHM_ConsoleTCP;
  * @author Balou
  *
  */
-public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_TCP {
+public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_TCP, Constantes {
 	
     /**
      *  proprietes pour la gestion des affichages dans la console
@@ -76,7 +78,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
          * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
          */
     	this.msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(TAILLE_BUFFER_CONSOLE);
-        this.console = new ConsoleMK("Console", NUM_CONSOLE_TCP, PRIORITE_CONSOLE, msgQ_Console, ihmApplication);
+        this.console = new ConsoleMK("Console", NUM_CONSOLE_TCP, PRIORITE_CONSOLE_SERVER_TCP, msgQ_Console, ihmApplication);
         
         new Thread(console).start();
         
@@ -84,7 +86,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "creation et lancement du thread de console"));
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Lancement controleur"));
 
-    	if (VERBOSE_ON)
+    	if (VERBOSE_ON_SERVER_TCP)
     		System.out.println("Lancement controleur");
     	
     	try {

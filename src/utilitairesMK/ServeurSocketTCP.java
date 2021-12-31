@@ -6,8 +6,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import controlerServeurCS.ControlerConsoleTCPServer;
+import modelMVC.Constantes;
+import utilitairesMK_MVC.MsgClientServeur;
+import utilitairesMK_MVC.MsgToConsole;
 
-public class ServeurSocketTCP implements Constantes_SERVER_TCP, Runnable {
+public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runnable {
 
 //    static final int port = NUM_PORT_SERVER;
     private ControlerConsoleTCPServer controleur;
@@ -49,7 +52,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Runnable {
      * @throws InterruptedException
      */
     private void gererServerTCP() throws IOException, ClassNotFoundException, InterruptedException {
-        	out.flush();
+ //       	out.flush();
 
         	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, Thread.currentThread() + " Serveur a cree les flux"));
         	System.out.println(Thread.currentThread() +" Serveur a cree les flux");
