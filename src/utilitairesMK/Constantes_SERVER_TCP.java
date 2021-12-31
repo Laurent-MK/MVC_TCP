@@ -6,7 +6,7 @@ public interface Constantes_SERVER_TCP {
 	 */
 	public static final int		VALEUR_NUM_NON_DEFINIE = 0;
 	
-	public static final boolean VERBOSE_ON_SERVER_TCP = true;	// pour declencher les affichage dans la console systeme
+	public static final boolean VERBOSE_ON_SERVER_TCP = false;	// pour declencher les affichage dans la console systeme
 	public static final boolean	VERBOSE_ON_CONSOLE = false;
 
 	public static final int 	TAILLE_MSG_Q_CONSOLE = 250;		// taille de la message queue du thread de console IHM

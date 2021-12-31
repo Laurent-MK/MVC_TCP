@@ -33,9 +33,15 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     private ArrayBlockingQueue<MsgToConsole> msgQ_Console;	// queue de message utilisee pour les envois de messages dans la console
     private ServerSocket socketServer;
 
-    	
 	private IHM_ConsoleTCP ihmApplication;
 
+	
+	/**
+	 * main de la classe gerant le serveur TCP
+	 * 
+	 * @param args
+	 * @throws InterruptedException
+	 */
 	public static void main(String[] args) throws InterruptedException {
 		try {
 			new ControlerConsoleTCPServer();
@@ -60,6 +66,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 	
 	/**
 	 * Constructeur de la classe
+	 * 
 	 * @throws IOException 
 	 * @throws ClassNotFoundException 
 	 */
@@ -70,21 +77,21 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 		/**
 		 * creation de l'instance de l'IHM et affichage de la fenetre principale
 		 */
-		ihmApplication = new IHM_ConsoleTCP(this);
-    	ihmApplication.setVisible(true);	// affichage de l'IHM
+		ihmApplication = new IHM_ConsoleTCP(this);	// creation de l'IHM
+    	ihmApplication.setVisible(true);			// affichage de l'IHM
 
 
     	/* lancement du thread de gestion de la console :
          * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
+         * puis on cree l'objet de gestion de la console et enfin, on lance le thread qui abrite l'objet console
          */
     	this.msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(TAILLE_BUFFER_CONSOLE);
-        this.console = new ConsoleMK("Console", NUM_CONSOLE_TCP, PRIORITE_CONSOLE_SERVER_TCP, msgQ_Console, ihmApplication);
-        
+        this.console = new ConsoleMK("Console", NUM_CONSOLE_TCP, PRIORITE_CONSOLE_SERVER_TCP, msgQ_Console, ihmApplication);        
         new Thread(console).start();
         
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE,  ""));
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "creation et lancement du thread de console"));
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Lancement controleur"));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,""));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "creation et lancement du thread de console"));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement controleur"));
 
     	if (VERBOSE_ON_SERVER_TCP)
     		System.out.println("Lancement controleur");
@@ -95,12 +102,12 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 			// TODO Bloc catch généré automatiquement
 			e.printStackTrace();
 		}
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Lancement du serveur de socket " + socketServer));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement du serveur de socket " + socketServer));
     	
 
     	while(true) {
        		soc = socketServer.accept();
-        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, !AJOUTER_NUM_MESSAGE, "Le serveur : " + soc + "a accepte une connexion avec un client"));
+        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Le serveur : " + soc + "a accepte une connexion avec un client"));
   
           	new Thread(new ServeurSocketTCP(this, soc)).start();
 

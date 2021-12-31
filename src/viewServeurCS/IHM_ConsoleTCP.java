@@ -1,7 +1,6 @@
 package viewServeurCS;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,9 +13,7 @@ import viewMVC.IHM;
 
 //import utilitairesMK.MsgToConsole;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
 import javax.swing.JTextArea;
-import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.Dimension;
@@ -45,7 +42,12 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 
 	@Override
 	public void affichageConsole(MsgToConsole msgConsole) {
-		
+
+		if (textAreaCentre.getLineCount() > 500)
+			textAreaCentre.setText("");
+		if (textAreaSud.getLineCount() > 500)
+			textAreaSud.setText("");
+
 		if (msgConsole.getNumConsoleDest() == NUM_CONSOLE_TCP)
 			textAreaCentre.append(msgConsole.getMsg());
 		else if (msgConsole.getNumConsoleDest() == NUM_CONSOLE_SYSTEM)
@@ -75,7 +77,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		this.controleur = controleur;
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 928, 851);
+		setBounds(100, 100, 1120, 851);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
