@@ -97,7 +97,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     		System.out.println("Lancement controleur");
     	
     	try {
-			socketServer = new ServerSocket(NUM_PORT_SERVER);
+			socketServer = new ServerSocket(NUM_PORT_SERVER);	// creation de la socket du serveur
 		} catch (Exception e) {
 			// TODO Bloc catch généré automatiquement
 			e.printStackTrace();
@@ -106,17 +106,12 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     	
 
     	while(true) {
+    		// on attent une demande de connexion venant d'un client
        		soc = socketServer.accept();
+       		
+       		// si une connexion se fait, on lance un thread de gestion de cette connexion client/serveur
         	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Le serveur : " + soc + "a accepte une connexion avec un client"));
-  
           	new Thread(new ServeurSocketTCP(this, soc)).start();
-
-          	/*Thread t =  new Thread(new ServeurSocketTCP(this, soc)).start();
-       		t.start();*/
-
-/*        	ServeurSocketTCP serveurSurSocket = new ServeurSocketTCP(this, socketServer, soc);
-        	Thread t = new Thread(serveurSurSocket);
- */
     	}
 	}
 }

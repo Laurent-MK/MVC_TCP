@@ -11,7 +11,6 @@ import utilitairesMK.Constantes_SERVER_TCP;
 import utilitairesMK_MVC.MsgToConsole;
 import viewMVC.IHM;
 
-//import utilitairesMK.MsgToConsole;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
@@ -22,6 +21,7 @@ import javax.swing.SwingConstants;
 public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP {
 
 	/**
+	 * Classe de gestion de l'IHM du server de socket TCP
 	 * 
 	 */
 	private static final long serialVersionUID = 7894248121929711049L;
@@ -140,7 +140,6 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		JLabel lblNewLabelWest = new JLabel("zone WEST");
 		lblNewLabelWest.setVerticalTextPosition(SwingConstants.TOP);
 		panelWEST.add(lblNewLabelWest);
-
 	}
 
 }
