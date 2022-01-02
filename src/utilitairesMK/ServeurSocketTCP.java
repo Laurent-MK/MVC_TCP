@@ -7,8 +7,7 @@ import java.net.Socket;
 
 import controlerServeurCS.ControlerConsoleTCPServer;
 import modelMVC.Constantes;
-import utilitairesMK_MVC.MessageMK;
-import utilitairesMK_MVC.MsgClientServeur;
+import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
 
 public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runnable {
@@ -79,6 +78,16 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
             							+ "\n\tMessage de type TYPE_MSG_CONTROLE"));
         				break;
         				
+        			case TYPE_MSG_TEST_LINK :
+                    	controleur.getConsole().sendMsgToConsole(
+            					new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread()
+            							+ "\n\tMessage de type TYPE_MSG_TEST_LINK recu par le serveur"));
+                    	
+                    	// envoi d'un message d'acquittement du message de test de liaison
+                    	out.writeObject(new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, MSG_FIN_COM, null));
+                        out.flush();
+        				break;
+        				
         			case TYPE_MSG_FIN_CONNEXION :
                     	controleur.getConsole().sendMsgToConsole(
                     					new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread()
@@ -97,7 +106,8 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
         	      	
         	      	
         	// on envoie un msg au client pour acquitter le fait que nous avons bien mis fin a la communication
-        	out.writeObject(new MsgToConsole(2, false, Thread.currentThread() + " MsgServeur : OK pour la fermeture de la connexion avec le serveur"));
+//        	out.writeObject(new MsgToConsole(2, false, Thread.currentThread() + " MsgServeur : OK pour la fermeture de la connexion avec le serveur"));
+        	out.writeObject(new MsgDeControle(TYPE_MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, MSG_FIN_COM, null));
             out.flush();
             
         	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, 
@@ -130,10 +140,10 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
 			System.out.println("ERREUR DE CLASSE");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Bloc catch généré automatiquement
+			// TODO Bloc catch gï¿½nï¿½rï¿½ automatiquement
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Bloc catch généré automatiquement
+			// TODO Bloc catch gï¿½nï¿½rï¿½ automatiquement
 			e.printStackTrace();
 		}		
 	}
@@ -148,8 +158,8 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     	if (msg instanceof MsgToConsole) {
     		return (traiteMsgToConsole((MsgToConsole)msg));
     	}
-       	if (msg instanceof MsgClientServeur) {
-    		return (traiteMsgToConsole((MsgClientServeur)msg));       		
+       	if (msg instanceof MsgDeControle) {
+    		return (traiteMsgToConsole((MsgDeControle)msg));       		
        	}
     	else return TYPE_MSG_INCONNU;	// type de message non traite
     }
@@ -162,7 +172,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      */
     private int traiteMsgToConsole(MsgToConsole msg) {
     	if (VERBOSE_ON_SERVER_TCP) {
-    		System.out.println("Message de type MsgToConsole reçu"
+    		System.out.println("Message de type MsgToConsole recu"
     							+ "Serveur : message recu = " + ((MsgToConsole)msg).getMsg()
     							);
     	}
@@ -179,19 +189,25 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * 
      * @param msg
      */
-    private int traiteMsgToConsole(MsgClientServeur msg) {
+    private int traiteMsgToConsole(MsgDeControle msg) {
     	
     	if (VERBOSE_ON_SERVER_TCP) {
-    		System.out.println("Message de type MsgClientServeur reçu");
-        	System.out.println("Serveur : message recu = " + ((MsgClientServeur)msg).getLibelleMsg());
+    		System.out.println("Message de type MsgClientServeur recu");
+        	System.out.println("Serveur : message recu = " + ((MsgDeControle)msg).getLibelleMsg());
     	}
 
-    	controleur.getConsole().sendMsgToConsole(
-				new MsgToConsole(NUM_CONSOLE_SYSTEM,
-								Thread.currentThread()
-								+ " : Message système reçu et contenant ce message txt = "
-								+ (((MsgToConsole)((MsgClientServeur)msg).getObj())).getMsg())
-								);
+    	Object obj = (((MsgDeControle)msg).getObj());
+    	if (obj != null) {
+        	controleur.getConsole().sendMsgToConsole(
+    				new MsgToConsole(NUM_CONSOLE_SYSTEM,
+    								Thread.currentThread()
+    								+ " : Message systeme recu et contenant un Object contenant ce message txt = "
+    								+ (((MsgToConsole)((MsgDeControle)msg).getObj())).getMsg())
+    								);    		
+    	}
+    	else {
+        	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Message systeme recu par le thread : " + Thread.currentThread() + " mais sans Object dedans" ));    		
+    	}
     	
     	return msg.getTypeMsg();
     }

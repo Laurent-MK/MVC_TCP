@@ -46,7 +46,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 		try {
 			new ControlerConsoleTCPServer();
 		} catch (ClassNotFoundException | IOException e) {
-			// TODO Bloc catch généré automatiquement
+			// TODO Bloc catch gï¿½nï¿½rï¿½ automatiquement
 			e.printStackTrace();
 		}	
 	}
@@ -99,12 +99,17 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     	try {
 			socketServer = new ServerSocket(NUM_PORT_SERVER);	// creation de la socket du serveur
 		} catch (Exception e) {
-			// TODO Bloc catch généré automatiquement
+			// TODO Bloc catch gï¿½nï¿½rï¿½ automatiquement
 			e.printStackTrace();
 		}
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement du serveur de socket " + socketServer));
     	
 
+    	/**
+    	 * boucle de traitement des demandes de connexion arrivant sur la socket du serveur
+    	 * pour chaque connexion, on lance un thread qui va gerer cette communication
+    	 * 
+    	 */
     	while(true) {
     		// on attent une demande de connexion venant d'un client
        		soc = socketServer.accept();

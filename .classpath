@@ -6,7 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/MVC/src"/>
-	<classpathentry kind="src" path="/MVC"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/MVC"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
