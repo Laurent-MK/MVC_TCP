@@ -17,6 +17,8 @@ import viewServeurCS.IHM_ConsoleTCP;
 
 
 /**
+ * META KONSULTING
+ * 
  * Classe de gestion de l'application de gestion d'une console distante
  * la console disante est en ecoute sur une socket et affiche les message qu'elle recoit dans 
  * une IHM locale
@@ -36,6 +38,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 	private IHM_ConsoleTCP ihmApplication;
 
 	
+	
 	/**
 	 * main de la classe gerant le serveur TCP
 	 * 
@@ -50,7 +53,6 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 			e.printStackTrace();
 		}	
 	}
-	
 	
 
 	/**
