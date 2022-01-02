@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import controlerMVC.Controler;
 import controlerServeurCS.ControlerConsoleTCPServer;
 import utilitairesMK.Constantes_SERVER_TCP;
 import utilitairesMK_MVC.MsgToConsole;
@@ -57,7 +58,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 
 	@Override
 	public void affichageRemplissageMQ_Console(int nbVal) {
-		// TODO Stub de la méthode généré automatiquement
+		// TODO Stub de la mï¿½thode gï¿½nï¿½rï¿½ automatiquement
 		
 	}
 
@@ -140,6 +141,16 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		JLabel lblNewLabelWest = new JLabel("zone WEST");
 		lblNewLabelWest.setVerticalTextPosition(SwingConstants.TOP);
 		panelWEST.add(lblNewLabelWest);
+	}
+
+	public ControlerConsoleTCPServer getControleur() {
+		return controleur;
+	}
+
+	@Override
+	public Controler getControler() {
+		// TODO Stub de la mÃ©thode gÃ©nÃ©rÃ© automatiquement
+		return null;
 	}
 
 }
