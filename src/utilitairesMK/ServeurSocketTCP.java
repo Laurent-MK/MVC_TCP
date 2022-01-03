@@ -26,12 +26,12 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
   	 * @throws IOException
   	 * @throws ClassNotFoundException
   	 */
-    public ServeurSocketTCP(ControlerConsoleTCPServer controleur, Socket socketClient) throws IOException, ClassNotFoundException {
+    public ServeurSocketTCP(ControlerConsoleTCPServer controleur, Socket socket) throws IOException {
     	this.controleur = controleur;
-    	this.socketServeur = socketClient;
+    	this.socketServeur = socket;
     	
-    	out = new ObjectOutputStream(socketClient.getOutputStream());	// ouverture du stream de sortie
-    	in = new ObjectInputStream(socketClient.getInputStream());		// ouverture du stream d'entree
+    	out = new ObjectOutputStream(this.socketServeur.getOutputStream());		// ouverture du stream de sortie
+    	in = new ObjectInputStream(this.socketServeur.getInputStream());		// ouverture du stream d'entree
     	
     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Socket server: flux I/O crees => en attente d'un objet\\n"));
 
@@ -99,23 +99,13 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
                     	// envoi d'un message d'acquittement du message de test de liaison
                     	out.writeObject(new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, MSG_ACQ_TEST, null));
                         out.flush();
-
- //                       connexionOK = false;
         				break;
         				
         			case TYPE_MSG_FIN_CONNEXION :
-                    	controleur.getConsole().sendMsgToConsole(
-                    					new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread()
-                    							+ "\n\tMessage de fin de com recu => le thread s'arrete"));
-
-                       	// on envoie un msg au client pour acquitter le fait que nous avons bien mis fin a la communication
- //                   	out.writeObject(new MsgDeControle(TYPE_MSG_FIN_CONNEXION, NUM_MSG_NOT_USED, MSG_FIN_COM, null));
- //                       out.flush();
-                        
-                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, 
+                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
                     											Thread.currentThread()
-                    											+ " Serveur : message envoye\nServeur : fermeture de la socket et arret du serveur\n"
-                    											));
+                    											+ "\n\tMessage de fin de com recu => le thread va s'arreter"));
+
                     	connexionOK = false;
         				break;
         				
@@ -133,10 +123,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
             socketServeur.close();
 
             if (VERBOSE_ON_SERVER_TCP) {
-                System.out.println(Thread.currentThread()
-                					+ " Serveur : fermeture de la socket et arret du serveur\n"
-                					+ " Serveur : message envoye\n"
-                					);
+                System.out.println(Thread.currentThread() + " Serveur : socket fermee et arret du serveur\n");
         	}           
     }
 
@@ -206,7 +193,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     private int traiteMsgToConsole(MsgDeControle msg) {
     	
     	if (VERBOSE_ON_SERVER_TCP) {
-    		System.out.println("Message de type MsgClientServeur recu");
+    		System.out.println("Message de type MsgDeControle recu");
         	System.out.println("Serveur : message recu = " + ((MsgDeControle)msg).getLibelleMsg());
     	}
 
