@@ -37,6 +37,8 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 
 	private IHM_ConsoleTCP ihmApplication;
 
+ 	private boolean VERBOSE_LOCAL = VERBOSE_ON_SERVER_TCP & false;
+
 	
 	
 	/**
@@ -95,7 +97,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "creation et lancement du thread de console"));
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement controleur"));
 
-    	if (VERBOSE_ON_SERVER_TCP)
+    	if (VERBOSE_LOCAL)
     		System.out.println("Lancement controleur");
     	
     	try {

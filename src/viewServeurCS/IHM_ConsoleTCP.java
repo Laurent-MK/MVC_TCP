@@ -33,7 +33,8 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 	private JTextArea textAreaSud = new JTextArea();
 	private int tailleZoneAffichageConsole = VALEUR_NUM_NON_DEFINIE;
 
-
+  	private boolean VERBOSE_LOCAL = VERBOSE_ON_SERVER_TCP & false;
+  	
 	
 	@Override
 	public void initIHM() {

@@ -9,6 +9,8 @@ import controlerServeurCS.ControlerConsoleTCPServer;
 import modelMVC.Constantes;
 import utilitairesMK_MVC.MsgDeControle;
 import utilitairesMK_MVC.MsgToConsole;
+import utilitairesMK_MVC.TypeMsgCS;
+import viewMVC.IHM_SERIALISABLE;
 
 public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runnable {
 
@@ -16,6 +18,9 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     private Socket socketServeur;
    	private ObjectOutputStream out;
   	private ObjectInputStream in;
+  	
+  	private boolean VERBOSE_LOCAL = VERBOSE_ON_SERVER_TCP & true;
+
     
     
     /**
@@ -29,14 +34,14 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     public ServeurSocketTCP(ControlerConsoleTCPServer controleur, Socket socket) throws IOException {
     	this.controleur = controleur;
     	this.socketServeur = socket;
-    	
+    	  
     	out = new ObjectOutputStream(this.socketServeur.getOutputStream());		// ouverture du stream de sortie
     	in = new ObjectInputStream(this.socketServeur.getInputStream());		// ouverture du stream d'entree
     	
     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Socket server: flux I/O crees => en attente d'un objet\\n"));
 
-    	if (VERBOSE_ON_SERVER_TCP)
-    		System.out.println(Thread.currentThread() + "Socket server: en attente d'un objet\n");
+    	if (VERBOSE_LOCAL)
+    		System.out.println(Thread.currentThread() + " ==> Serveur : en attente d'un objet\n");
     	}
 
     
@@ -50,12 +55,11 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     private void gererServerTCP() throws IOException, ClassNotFoundException, InterruptedException {
     	
     	boolean connexionOK = true;
-    	
  //       	out.flush();
 
         	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() +" Le serveur a accepte connexion venant du client : " + socketServeur));
-        	if (VERBOSE_ON_SERVER_TCP)
-        		System.out.println(Thread.currentThread() +"Le serveur a accepte la connexion : " + socketServeur);
+        	if (VERBOSE_LOCAL)
+        		System.out.println(Thread.currentThread() + " ==> Serveur : a accepte la connexion : " + socketServeur);
    
         	/**
         	 * boucle de gestion des messages venant du client qui est connecte
@@ -70,21 +74,22 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
 
         		switch (traiteMsgToConsole(msgRecu)) {
 
-        			case TYPE_MSG_CONSOLE :
-    					if (VERBOSE_ON_SERVER_TCP)
-    	        			System.out.println("Message a destination de la console recu et transmis a la console");
+        			case MSG_CONSOLE :
+        		    	if (VERBOSE_LOCAL)
+        		    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type MSG_CONSOLE recu et transmis a la console");
         				break;
-        				
-        			case TYPE_MSG_CONTROLE :
+
+        			case MSG_CONTROLE :
                     	controleur.getConsole().sendMsgToConsole(
             					new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread()
-            							+ "\n\tMessage de type TYPE_MSG_CONTROLE"));
+            							+ "\n\tMessage de type MSG_CONTROLE"));
         				break;
-        				
-        			case TYPE_MSG_TEST_LINK :       				
+
+
+        			case MSG_TEST_LINK :       				
                     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
                     																Thread.currentThread()
-						                    										+ "\n\tMessage de type TYPE_MSG_TEST_LINK recu par le serveur : "
+						                    										+ "\n\tMessage de type MSG_TEST_LINK recu par le serveur : "
 						                    										+ ((MsgDeControle)msgRecu).getLibelleMsg()
 						                    										)
                     											);
@@ -97,23 +102,56 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
                     											);
 
                     	// envoi d'un message d'acquittement du message de test de liaison
-                    	out.writeObject(new MsgDeControle(TYPE_MSG_TEST_LINK, NUM_MSG_NOT_USED, MSG_ACQ_TEST, null));
+                    	out.writeObject(new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, MSG_ACQ_TEST, null));
                         out.flush();
         				break;
-        				
-        			case TYPE_MSG_FIN_CONNEXION :
+
+
+        			case MSG_FIN_CONNEXION :
                     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
                     											Thread.currentThread()
-                    											+ "\n\tMessage de fin de com recu => le thread va s'arreter"));
+                    											+ "\n\tMessage de type MSG_FIN_CONNEXION recu => le thread va s'arreter"));
 
                     	connexionOK = false;
         				break;
+
+        			/**
+        			 * cas de la reception d'une IHM : on la recoit puis on l'affiche sur l'écran
+        			 * 
+        			 */
+        			case MSG_TRF_IHM :
+        		    	if (VERBOSE_LOCAL)
+                			System.out.println(Thread.currentThread() + " ==> Serveur : Objet IHM recu");
+  
+        				IHM_SERIALISABLE ihm = (IHM_SERIALISABLE)msgRecu;
+        				ihm.setVisible(true);
+        				ihm.setLocation(0, 0);
+        				break;
+        				        				
+        			case MSG_TRF_OBJET :
+        				/**
+        				 * reception d'un objet passe directement dans la socket
+        				 */
+        		    	if (VERBOSE_LOCAL)
+                			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
+      				break;
+
         				
-        			default :
-        				if (VERBOSE_ON_SERVER_TCP)
-                			System.out.println("ERREUR SUR LE TYPE DE MESSAGE RECU : TYPE INCONNU!!!!!");
-                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + "ERREUR SUR LE TYPE DE MESSAGE RECU !!!!!"));
+        			case MSG_INCONNU :
+        				/**
+        				 * on a recu un message qui n'est pas connu par le protocole
+        				 * Il s'agit donc d'un objet inconnu contenu dans "msgRecu".
+        				 */
+        		    	if (VERBOSE_LOCAL)
+                			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
                     	break;
+
+        			
+        			default :
+        		    	if (VERBOSE_LOCAL)
+                			System.out.println(Thread.currentThread() + " ==> Serveur : ERREUR SUR LE TYPE DE MESSAGE RECU : TYPE INCONNU!!!!!");
+                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + "ERREUR SUR LE TYPE DE MESSAGE RECU !!!!!"));
+        				break;
         		}
         	}
         	
@@ -122,8 +160,8 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
             out.close();
             socketServeur.close();
 
-            if (VERBOSE_ON_SERVER_TCP) {
-                System.out.println(Thread.currentThread() + " Serveur : socket fermee et arret du serveur\n");
+        	if (VERBOSE_LOCAL) {
+                System.out.println(Thread.currentThread() + " ==> Serveur : socket fermee et arret du serveur\n");
         	}           
     }
 
@@ -155,14 +193,22 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * Traitement du message recu : on appelle la bonne methode en fonction du type d'objet recu
      * 
      */
-    private int traiteMsgToConsole(Object msg) {
+    private TypeMsgCS traiteMsgToConsole(Object msg) {
     	if (msg instanceof MsgToConsole) {
-    		return (traiteMsgToConsole((MsgToConsole)msg));
+    		return (traiteMsgToConsole((MsgToConsole)msg)); // msg de type msg pour la console
     	}
-       	if (msg instanceof MsgDeControle) {
-    		return (traiteMsgToConsole((MsgDeControle)msg));       		
-       	}
-    	else return TYPE_MSG_INCONNU;	// type de message non traite
+    	else {
+           	if (msg instanceof MsgDeControle) {
+        		return (traiteMsgToConsole((MsgDeControle)msg)); // msg de type controle entre client et serveur
+           	}
+           	else if (msg instanceof IHM_SERIALISABLE) {
+           		return TypeMsgCS.MSG_TRF_IHM; // msg de type IHM serialisable
+           	}
+           	else if (msg instanceof Object) {
+           		return TypeMsgCS.MSG_TRF_OBJET; // msg de type Objet non connu a ce niveau
+           	}
+    	}
+    	return TypeMsgCS.MSG_INCONNU;	// type de message a traite au niveau du dessus
     }
     
     
@@ -171,17 +217,16 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * 
      * @param msg
      */
-    private int traiteMsgToConsole(MsgToConsole msg) {
-    	if (VERBOSE_ON_SERVER_TCP) {
-    		System.out.println("Message de type MsgToConsole recu"
-    							+ "Serveur : message recu = " + ((MsgToConsole)msg).getMsg()
+    private TypeMsgCS traiteMsgToConsole(MsgToConsole msg) {
+    	if (VERBOSE_LOCAL) {
+    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type \"MsgToConsole recu\" : " + ((MsgToConsole)msg).getMsg()
     							);
     	}
     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, Thread.currentThread()
     											+ " Serveur : message recu = "
     											+ ((MsgToConsole)msg).getMsg()));
 
-    	return TYPE_MSG_CONSOLE;
+    	return TypeMsgCS.MSG_CONSOLE;
     }
     
     
@@ -190,11 +235,10 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * 
      * @param msg
      */
-    private int traiteMsgToConsole(MsgDeControle msg) {
+    private TypeMsgCS traiteMsgToConsole(MsgDeControle msg) {
     	
-    	if (VERBOSE_ON_SERVER_TCP) {
-    		System.out.println("Message de type MsgDeControle recu");
-        	System.out.println("Serveur : message recu = " + ((MsgDeControle)msg).getLibelleMsg());
+    	if (VERBOSE_LOCAL) {
+    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type \"MsgDeControle\" recu : " + ((MsgDeControle)msg).getLibelleMsg());
     	}
 
     	Object obj = (((MsgDeControle)msg).getObj());
