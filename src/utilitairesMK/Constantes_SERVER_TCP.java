@@ -10,7 +10,8 @@ public interface Constantes_SERVER_TCP {
 	public static final boolean	VERBOSE_ON_CONSOLE = false;
 
 	public static final int 	TAILLE_MSG_Q_CONSOLE = 250;		// taille de la message queue du thread de console IHM
-	public static final int 	MAX_MSG_CONSOLE = 500;			// maximum de messages stockes dans la console
+	public static final int 	MAX_MSG_CONSOLE_CENTRE = 500;	// maximum de messages stockes dans la console
+	public static final int 	MAX_MSG_CONSOLE_SUD = 200;	// maximum de messages stockes dans la console
 	public static final int		TAILLE_BUFFER_CONSOLE = 500;
 	
 	public static final int 	NUM_CONSOLE_SYSTEM = 0;			// numero de la console d'affichage

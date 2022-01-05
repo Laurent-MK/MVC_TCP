@@ -1,6 +1,7 @@
 package viewServeurCS;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,6 +19,8 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import javax.swing.SwingConstants;
+import javax.swing.text.Caret;
+import javax.swing.JProgressBar;
 
 public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP {
 
@@ -31,24 +34,43 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 	private ControlerConsoleTCPServer controleur;
 	private JTextArea textAreaCentre = new JTextArea();
 	private JTextArea textAreaSud = new JTextArea();
+	private JProgressBar progressBarConsoleSud = new JProgressBar(0, MAX_MSG_CONSOLE_SUD);
+	private JProgressBar progressBarConsoleCentre = new JProgressBar(0, MAX_MSG_CONSOLE_CENTRE);
+	
 	private int tailleZoneAffichageConsole = VALEUR_NUM_NON_DEFINIE;
 
   	private boolean VERBOSE_LOCAL = VERBOSE_ON_SERVER_TCP & false;
   	
-	
+	/**
+	 * methode d'initialisation de l'IHM
+	 */
 	@Override
 	public void initIHM() {
 		textAreaCentre.append("\n");
 		textAreaSud.append("\n");
+		
+		progressBarConsoleSud.setForeground(Color.GREEN);	
+		progressBarConsoleSud.setForeground(Color.GREEN);	// la progressBar est en gris au début
+
+		progressBarConsoleCentre.setBackground(Color.WHITE);
+		progressBarConsoleCentre.setForeground(Color.GREEN);	
 	}
 
+
+	/**
+	 * methode utlisee pour afficher un message soit dans la console du centre
+	 * soit dans la console du sud
+	 */
 	@Override
 	public void affichageConsole(MsgToConsole msgConsole) {
 
-		if (textAreaCentre.getLineCount() > 500)
+		if (textAreaCentre.getLineCount() > MAX_MSG_CONSOLE_CENTRE)
 			textAreaCentre.setText("");
-		if (textAreaSud.getLineCount() > 500)
+		progressBarConsoleCentre.setValue(textAreaCentre.getLineCount());
+
+		if (textAreaSud.getLineCount() > MAX_MSG_CONSOLE_SUD)
 			textAreaSud.setText("");
+		progressBarConsoleSud.setValue(textAreaSud.getLineCount());
 
 		if (msgConsole.getNumConsoleDest() == NUM_CONSOLE_TCP)
 			textAreaCentre.append(msgConsole.getMsg());
@@ -72,7 +94,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 	}
 
 	/**
-	 * Create the frame.
+	 * Creation de la fenetre.
 	 */
 	public IHM_ConsoleTCP(ControlerConsoleTCPServer controleur) {
 
@@ -107,6 +129,8 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		contentPane.add(scrollPaneSUD, BorderLayout.SOUTH);
 		scrollPaneSUD.setViewportView(textAreaSud);
 		textAreaSud.setText("on est au SUD");
+		
+		scrollPaneSUD.setColumnHeaderView(progressBarConsoleSud);
 		textAreaCentre.append("\n");
 
 		
@@ -118,6 +142,9 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		
 		scrollPaneCENTER.setViewportView(textAreaCentre);
 		textAreaCentre.setText("On est au centre");
+		
+		progressBarConsoleCentre.setOrientation(SwingConstants.VERTICAL);
+		scrollPaneCENTER.setRowHeaderView(progressBarConsoleCentre);
 		textAreaCentre.append("\n");
 		
 		/**
@@ -142,6 +169,11 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		JLabel lblNewLabelWest = new JLabel("zone WEST");
 		lblNewLabelWest.setVerticalTextPosition(SwingConstants.TOP);
 		panelWEST.add(lblNewLabelWest);
+		
+		/**
+		 * initialisation de l'IHM
+		 */
+		initIHM();
 	}
 
 	public ControlerConsoleTCPServer getControleur() {

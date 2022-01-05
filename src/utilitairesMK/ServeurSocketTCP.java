@@ -53,116 +53,132 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * @throws InterruptedException
      */
     private void gererServerTCP() throws IOException, ClassNotFoundException, InterruptedException {
-    	
     	boolean connexionOK = true;
- //       	out.flush();
+       	out.flush();
 
-        	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() +" Le serveur a accepte connexion venant du client : " + socketServeur));
-        	if (VERBOSE_LOCAL)
-        		System.out.println(Thread.currentThread() + " ==> Serveur : a accepte la connexion : " + socketServeur);
+        controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() +" Le serveur a accepte connexion venant du client : " + socketServeur));
+        if (VERBOSE_LOCAL)
+        	System.out.println(Thread.currentThread() + " ==> Serveur : a accepte la connexion : " + socketServeur);
    
-        	/**
-        	 * boucle de gestion des messages venant du client qui est connecte
-        	 * Le msg TYPE_MSG_FIN_CONNEXION permet de mettre fin a la communication
-        	 * en le client et le serveur
-        	 * 
-        	 */
-        	while(connexionOK) {
-            	
-        		// reception d'un msg. En fait il s'agit d'un objet
-        		Object msgRecu = in.readObject();
-
-        		switch (traiteMsgToConsole(msgRecu)) {
-
-        			case MSG_CONSOLE :
-        		    	if (VERBOSE_LOCAL)
-        		    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type MSG_CONSOLE recu et transmis a la console");
-        				break;
-
-        			case MSG_CONTROLE :
-                    	controleur.getConsole().sendMsgToConsole(
-            					new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread()
-            							+ "\n\tMessage de type MSG_CONTROLE"));
-        				break;
-
-
-        			case MSG_TEST_LINK :       				
-                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
-                    																Thread.currentThread()
-						                    										+ "\n\tMessage de type MSG_TEST_LINK recu par le serveur : "
-						                    										+ ((MsgDeControle)msgRecu).getLibelleMsg()
-						                    										)
-                    											);
-                    	
-                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP,
-                    																Thread.currentThread()
-																					+ " Serveur : message recu = "
-																					+ ((MsgDeControle)msgRecu).getLibelleMsg()
-																					)
-                    											);
-
-                    	// envoi d'un message d'acquittement du message de test de liaison
-                    	out.writeObject(new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, MSG_ACQ_TEST, null));
-                        out.flush();
-        				break;
-
-
-        			case MSG_FIN_CONNEXION :
-                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
-                    											Thread.currentThread()
-                    											+ "\n\tMessage de type MSG_FIN_CONNEXION recu => le thread va s'arreter"));
-
-                    	connexionOK = false;
-        				break;
-
-        			/**
-        			 * cas de la reception d'une IHM : on la recoit puis on l'affiche sur l'écran
-        			 * 
-        			 */
-        			case MSG_TRF_IHM :
-        		    	if (VERBOSE_LOCAL)
-                			System.out.println(Thread.currentThread() + " ==> Serveur : Objet IHM recu");
-  
-        				IHM_SERIALISABLE ihm = (IHM_SERIALISABLE)msgRecu;
-        				ihm.setVisible(true);
-        				ihm.setLocation(0, 0);
-        				break;
-        				        				
-        			case MSG_TRF_OBJET :
-        				/**
-        				 * reception d'un objet passe directement dans la socket
-        				 */
-        		    	if (VERBOSE_LOCAL)
-                			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
-      				break;
-
-        				
-        			case MSG_INCONNU :
-        				/**
-        				 * on a recu un message qui n'est pas connu par le protocole
-        				 * Il s'agit donc d'un objet inconnu contenu dans "msgRecu".
-        				 */
-        		    	if (VERBOSE_LOCAL)
-                			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
-                    	break;
-
-        			
-        			default :
-        		    	if (VERBOSE_LOCAL)
-                			System.out.println(Thread.currentThread() + " ==> Serveur : ERREUR SUR LE TYPE DE MESSAGE RECU : TYPE INCONNU!!!!!");
-                    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + "ERREUR SUR LE TYPE DE MESSAGE RECU !!!!!"));
-        				break;
-        		}
-        	}
+    	/**
+    	 * boucle de gestion des messages venant du client qui est connecte
+    	 * Le msg TYPE_MSG_FIN_CONNEXION permet de mettre fin a la communication
+    	 * en le client et le serveur
+    	 * 
+    	 */
+    	while(connexionOK) {
         	
-        	// fermeture des streams de communication avec le client
-            in.close();
-            out.close();
-            socketServeur.close();
+    		// reception d'un msg. En fait il s'agit d'un objet
+    		Object msgRecu = in.readObject();
 
-        	if (VERBOSE_LOCAL) {
-                System.out.println(Thread.currentThread() + " ==> Serveur : socket fermee et arret du serveur\n");
-        	}           
+    		/**
+    		 * reception et traitement des messages recus venant du client
+    		 */
+    		switch (traiteMsgRecu(msgRecu)) {
+
+    			/**
+    			 * traitement des messages destines à la console deportee (celle qui est une copie de la console
+    			 * locale du client.
+    			 */
+    			case MSG_CONSOLE :
+    		    	if (VERBOSE_LOCAL)
+    		    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type MSG_CONSOLE recu et transmis a la console");
+    				break;
+
+    			/**
+    			 * messages lies au protocole de communication entre le client et le sevreur
+    			 */
+    			case MSG_CONTROLE :
+                	controleur.getConsole().sendMsgToConsole(
+        					new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread()
+        							+ "\n\tMessage de type MSG_CONTROLE"));
+    				break;
+
+
+    			/**
+    			 * message de test de la liaison entre le client et le serveur
+    			 * On recoit le msg puis on retourne un msg de test vers le client
+    			 */
+    			case MSG_TEST_LINK :       				
+                	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
+                																Thread.currentThread()
+					                    										+ "\n\tMessage de type MSG_TEST_LINK recu par le serveur : "
+					                    										+ ((MsgDeControle)msgRecu).getLibelleMsg()
+					                    										)
+                											);
+                	
+                	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP,
+                																Thread.currentThread()
+																				+ " Serveur : message recu = "
+																				+ ((MsgDeControle)msgRecu).getLibelleMsg()
+																				)
+                											);
+
+                	// envoi d'un message d'acquittement du message de test de liaison
+                	out.writeObject(new MsgDeControle(TypeMsgCS.MSG_TEST_LINK, NUM_MSG_NOT_USED, MSG_ACQ_TEST, null));
+                    out.flush();
+    				break;
+
+
+    			/**
+    			 * message indiquant au serveur que le client va rompre la communication
+    			 */
+    			case MSG_FIN_CONNEXION :
+                	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,
+                											Thread.currentThread()
+                											+ "\n\tMessage de type MSG_FIN_CONNEXION recu => le thread va s'arreter"));
+
+                	connexionOK = false;
+    				break;
+
+    			/**
+    			 * cas de la reception d'une IHM : on la recoit puis on l'affiche sur l'écran
+    			 * 
+    			 */
+    			case MSG_TRF_IHM :
+    		    	if (VERBOSE_LOCAL)
+            			System.out.println(Thread.currentThread() + " ==> Serveur : Objet IHM recu");
+
+    				IHM_SERIALISABLE ihm = (IHM_SERIALISABLE)msgRecu;
+    				ihm.setVisible(true);
+    				ihm.setLocation(0, 0);
+    				break;
+    				        				
+    			case MSG_TRF_OBJET :
+    				/**
+    				 * reception d'un objet passe directement dans la socket
+    				 */
+    		    	if (VERBOSE_LOCAL)
+            			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
+  				break;
+
+    				
+    			case MSG_INCONNU :
+    				/**
+    				 * on a recu un message qui n'est pas connu par le protocole
+    				 * Il s'agit donc d'un objet inconnu contenu dans "msgRecu".
+    				 */
+    		    	if (VERBOSE_LOCAL)
+            			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
+                	break;
+
+    			
+    			default :
+    		    	if (VERBOSE_LOCAL)
+            			System.out.println(Thread.currentThread() + " ==> Serveur : ERREUR SUR LE TYPE DE MESSAGE RECU : TYPE INCONNU!!!!!");
+                	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + "ERREUR SUR LE TYPE DE MESSAGE RECU !!!!!"));
+    				break;
+    		}
+    	}
+    	
+    	// fermeture des streams de communication avec le client
+        in.close();
+        out.close();
+        socketServeur.close();
+
+    	if (VERBOSE_LOCAL) {
+            System.out.println(Thread.currentThread() + " ==> Serveur : socket fermee et arret du serveur\n");
+    	}           
     }
 
 
@@ -193,7 +209,8 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * Traitement du message recu : on appelle la bonne methode en fonction du type d'objet recu
      * 
      */
-    private TypeMsgCS traiteMsgToConsole(Object msg) {
+    private TypeMsgCS traiteMsgRecu(Object msg) {
+    	
     	if (msg instanceof MsgToConsole) {
     		return (traiteMsgToConsole((MsgToConsole)msg)); // msg de type msg pour la console
     	}
@@ -205,7 +222,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
            		return TypeMsgCS.MSG_TRF_IHM; // msg de type IHM serialisable
            	}
            	else if (msg instanceof Object) {
-           		return TypeMsgCS.MSG_TRF_OBJET; // msg de type Objet non connu a ce niveau
+           		return TypeMsgCS.MSG_TRF_OBJET; // msg de type Objet (non connu a ce niveau)
            	}
     	}
     	return TypeMsgCS.MSG_INCONNU;	// type de message a traite au niveau du dessus
@@ -219,7 +236,10 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      */
     private TypeMsgCS traiteMsgToConsole(MsgToConsole msg) {
     	if (VERBOSE_LOCAL) {
-    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type \"MsgToConsole recu\" : " + ((MsgToConsole)msg).getMsg()
+    		System.out.println(Thread.currentThread()
+    							+ " ==> Serveur : Message de type \"MsgToConsole contenant ce msg \" : \""
+    							+ ((MsgToConsole)msg).getMsg()
+    							+ "\""
     							);
     	}
     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, Thread.currentThread()
@@ -238,7 +258,11 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     private TypeMsgCS traiteMsgToConsole(MsgDeControle msg) {
     	
     	if (VERBOSE_LOCAL) {
-    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type \"MsgDeControle\" recu : " + ((MsgDeControle)msg).getLibelleMsg());
+    		System.out.println(Thread.currentThread()
+    							+ " ==> Serveur : Message de type \"MsgDeControle\" contenant ce msg \" : \""
+    							+ ((MsgDeControle)msg).getLibelleMsg()
+    							+ "\""
+    							);
     	}
 
     	Object obj = (((MsgDeControle)msg).getObj());
