@@ -77,7 +77,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     		switch (traiteMsgRecu(msgRecu)) {
 
     			/**
-    			 * traitement des messages destines à la console deportee (celle qui est une copie de la console
+    			 * traitement des messages destines ï¿½ la console deportee (celle qui est une copie de la console
     			 * locale du client.
     			 */
     			case MSG_CONSOLE :
@@ -132,7 +132,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     				break;
 
     			/**
-    			 * cas de la reception d'une IHM : on la recoit puis on l'affiche sur l'écran
+    			 * cas de la reception d'une IHM : on la recoit puis on l'affiche sur l'ï¿½cran
     			 * 
     			 */
     			case MSG_TRF_IHM :
