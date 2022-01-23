@@ -20,7 +20,7 @@ import fr.metakonsulting.serveurcs.view.IHM_ConsoleTCP;
  * META KONSULTING
  * 
  * Classe de gestion de l'application de gestion d'une console distante
- * la console disante est en ecoute sur une socket et affiche les message qu'elle recoit dans 
+ * la console distante est en ecoute sur une socket et affiche les messages qu'elle recoit dans 
  * une IHM locale
  * 
  * @author Balou
@@ -107,7 +107,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     	try {
 			socketServer = new ServerSocket(NUM_PORT_SERVER);	// creation de la socket du serveur. on se met en ecoute sur le port indique
 		} catch (Exception e) {
-			// TODO Bloc catch g�n�r� automatiquement
+			// TODO Bloc catch genere automatiquement
 			e.printStackTrace();
 		}
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + " : Lancement du serveur de socket " + socketServer));
