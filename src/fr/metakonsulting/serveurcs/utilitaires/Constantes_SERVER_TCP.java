@@ -1,4 +1,4 @@
-package utilitairesMK;
+package fr.metakonsulting.serveurcs.utilitaires;
 
 public interface Constantes_SERVER_TCP {
 	/**

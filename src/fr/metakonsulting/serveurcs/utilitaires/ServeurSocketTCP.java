@@ -1,16 +1,16 @@
-package utilitairesMK;
+package fr.metakonsulting.serveurcs.utilitaires;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import controlerServeurCS.ControlerConsoleTCPServer;
-import modelMVC.Constantes;
-import utilitairesMK_MVC.MsgDeControle;
-import utilitairesMK_MVC.MsgToConsole;
-import utilitairesMK_MVC.TypeMsgCS;
-import viewMVC.IHM_SERIALISABLE;
+import fr.metakonsulting.mvc.model.Constantes;
+import fr.metakonsulting.mvc.utilitaires.MsgDeControle;
+import fr.metakonsulting.mvc.utilitaires.MsgToConsole;
+import fr.metakonsulting.mvc.utilitaires.TypeMsgCS;
+import fr.metakonsulting.mvc.view.IHM_SERIALISABLE;
+import fr.metakonsulting.serveurcs.controler.ControlerConsoleTCPServer;
 
 public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runnable {
 
@@ -32,16 +32,13 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
   	 * @throws ClassNotFoundException
   	 */
     public ServeurSocketTCP(ControlerConsoleTCPServer controleur, Socket socket) throws IOException {
-    	this.controleur = controleur;
-    	this.socketServeur = socket;
+    	this.controleur = controleur;	// le controleur de l'application serveur TCP
+    	this.socketServeur = socket;	// la socket pour communiquer avec le client TCP
     	  
     	out = new ObjectOutputStream(this.socketServeur.getOutputStream());		// ouverture du stream de sortie
     	in = new ObjectInputStream(this.socketServeur.getInputStream());		// ouverture du stream d'entree
     	
-    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Socket server: flux I/O crees => en attente d'un objet\\n"));
-
-    	if (VERBOSE_LOCAL)
-    		System.out.println(Thread.currentThread() + " ==> Serveur : en attente d'un objet\n");
+    	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + "  ==> Serveur : flux I/O crees => en attente d'un objet\\n"));
     	}
 
     
@@ -56,7 +53,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     	boolean connexionOK = true;
        	out.flush();
 
-        controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() +" Le serveur a accepte connexion venant du client : " + socketServeur));
+        controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + "  ==> Serveur : a accepte connexion venant du client : " + socketServeur));
         if (VERBOSE_LOCAL)
         	System.out.println(Thread.currentThread() + " ==> Serveur : a accepte la connexion : " + socketServeur);
    
@@ -68,7 +65,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     	 */
     	while(connexionOK) {
         	
-    		// reception d'un msg. En fait il s'agit d'un objet
+    		// reception d'un msg via la socket TCP
     		Object msgRecu = in.readObject();
 
     		/**
@@ -77,14 +74,15 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     		switch (traiteMsgRecu(msgRecu)) {
 
     			/**
-    			 * traitement des messages destines � la console deportee (celle qui est une copie de la console
-    			 * locale du client.
+    			 * traitement des messages destines a la console deportee (celle qui est une copie de la console
+    			 * locale du client).
     			 */
     			case MSG_CONSOLE :
     		    	if (VERBOSE_LOCAL)
     		    		System.out.println(Thread.currentThread() + " ==> Serveur : Message de type MSG_CONSOLE recu et transmis a la console");
     				break;
 
+    				
     			/**
     			 * messages lies au protocole de communication entre le client et le sevreur
     			 */
@@ -128,9 +126,10 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
                 											Thread.currentThread()
                 											+ "\n\tMessage de type MSG_FIN_CONNEXION recu => le thread va s'arreter"));
 
-                	connexionOK = false;
+                	connexionOK = false;	// pour sortir de la boucle de reception des messages venant du client
     				break;
 
+    				
     			/**
     			 * cas de la reception d'une IHM : on la recoit puis on l'affiche sur l'�cran
     			 * 
@@ -143,11 +142,12 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     				ihm.setVisible(true);
     				ihm.setLocation(0, 0);
     				break;
-    				        				
+    				      
+    				
+    			/**
+    			* reception d'un objet passe directement dans la socket
+    			*/
     			case MSG_TRF_OBJET :
-    				/**
-    				 * reception d'un objet passe directement dans la socket
-    				 */
     		    	if (VERBOSE_LOCAL)
             			System.out.println(Thread.currentThread() + " ==> Serveur : Objet de type inconnu recu");
   				break;
@@ -172,7 +172,8 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     	}
     	
     	// fermeture des streams de communication avec le client
-        in.close();
+    	out.flush();
+    	in.close();
         out.close();
         socketServeur.close();
 
@@ -190,12 +191,16 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     @Override
 	public void run() {
 		try {
+	    	if (VERBOSE_LOCAL)
+	    		System.out.println(Thread.currentThread() + " ==> Serveur : en attente d'un objet\n");
+
 			gererServerTCP();	// gestion de la connexion et des messages recus
+			
 		} catch (ClassNotFoundException e) {
-			System.out.println("ERREUR DE CLASSE");
+			System.out.println(Thread.currentThread() + "==> ERREUR DE CLASSE");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Bloc catch g�n�r� automatiquement
+			System.out.println(Thread.currentThread() + "==> ERREUR : IOException e = " + e.toString());
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Bloc catch g�n�r� automatiquement
@@ -212,11 +217,11 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     private TypeMsgCS traiteMsgRecu(Object msg) {
     	
     	if (msg instanceof MsgToConsole) {
-    		return (traiteMsgToConsole((MsgToConsole)msg)); // msg de type msg pour la console
+    		return (afficheMsgDansConsole((MsgToConsole)msg)); // msg de type msg pour la console
     	}
     	else {
            	if (msg instanceof MsgDeControle) {
-        		return (traiteMsgToConsole((MsgDeControle)msg)); // msg de type controle entre client et serveur
+        		return (afficheMsgDansConsole((MsgDeControle)msg)); // msg de type controle entre client et serveur
            	}
            	else if (msg instanceof IHM_SERIALISABLE) {
            		return TypeMsgCS.MSG_TRF_IHM; // msg de type IHM serialisable
@@ -234,7 +239,7 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
      * 
      * @param msg
      */
-    private TypeMsgCS traiteMsgToConsole(MsgToConsole msg) {
+    private TypeMsgCS afficheMsgDansConsole(MsgToConsole msg) {
     	if (VERBOSE_LOCAL) {
     		System.out.println(Thread.currentThread()
     							+ " ==> Serveur : Message de type \"MsgToConsole contenant ce msg \" : \""
@@ -242,6 +247,10 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     							+ "\""
     							);
     	}
+    	/**
+    	 * on envoie le message dans la console d'affichage des messages distants.
+    	 * La console du centre est utilisee pour ces affichages
+    	 */
     	controleur.getConsole().sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_TCP, Thread.currentThread()
     											+ " Serveur : message recu = "
     											+ ((MsgToConsole)msg).getMsg()));
@@ -251,11 +260,11 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     
     
     /**
-     *methode utilise pour taiter les messages de controle
+     *methode utilise pour traiter les messages de controle
      * 
      * @param msg
      */
-    private TypeMsgCS traiteMsgToConsole(MsgDeControle msg) {
+    private TypeMsgCS afficheMsgDansConsole(MsgDeControle msg) {
     	
     	if (VERBOSE_LOCAL) {
     		System.out.println(Thread.currentThread()
@@ -265,6 +274,9 @@ public class ServeurSocketTCP implements Constantes_SERVER_TCP, Constantes, Runn
     							);
     	}
 
+    	/*
+    	 * on envoi le message a afficher dans la console systeme : la zone de texte en bas de la page (zone sud)
+    	 */
     	Object obj = (((MsgDeControle)msg).getObj());
     	if (obj != null) {
         	controleur.getConsole().sendMsgToConsole(

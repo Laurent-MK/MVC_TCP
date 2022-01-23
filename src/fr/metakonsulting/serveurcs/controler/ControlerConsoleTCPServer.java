@@ -1,17 +1,17 @@
-package controlerServeurCS;
+package fr.metakonsulting.serveurcs.controler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import modelMVC.Constantes;
-import controlerMVC.Controler;
-import utilitairesMK.Constantes_SERVER_TCP;
-import utilitairesMK.ServeurSocketTCP;
-import utilitairesMK_MVC.ConsoleMK;
-import utilitairesMK_MVC.MsgToConsole;
-import viewServeurCS.IHM_ConsoleTCP;
+import fr.metakonsulting.mvc.controler.Controler;
+import fr.metakonsulting.mvc.model.Constantes;
+import fr.metakonsulting.mvc.utilitaires.ConsoleMK;
+import fr.metakonsulting.mvc.utilitaires.MsgToConsole;
+import fr.metakonsulting.serveurcs.utilitaires.Constantes_SERVER_TCP;
+import fr.metakonsulting.serveurcs.utilitaires.ServeurSocketTCP;
+import fr.metakonsulting.serveurcs.view.IHM_ConsoleTCP;
 
 
 
@@ -37,7 +37,7 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 
 	private IHM_ConsoleTCP ihmApplication;
 
- 	private boolean VERBOSE_LOCAL = VERBOSE_ON_SERVER_TCP & false;
+ 	private boolean VERBOSE_LOCAL = VERBOSE_ON_SERVER_TCP & true;
 
 	
 	
@@ -86,27 +86,31 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
 
 
     	/* lancement du thread de gestion de la console :
-         * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console
+         * On commence par creer la MessageQueue qui va recevoir les messages a afficher dans la console (soit celle du nord soit celle du sud)
          * puis on cree l'objet de gestion de la console et enfin, on lance le thread qui abrite l'objet console
+         * 
+         * La console du nord est celle dans laquelle les messages affiches sont ceux qui sont egalement affiches dans la console locale du client
+         * distant
+         * La console sud est la console systeme locale à l'application de console distante.
          */
     	this.msgQ_Console = new ArrayBlockingQueue<MsgToConsole>(TAILLE_BUFFER_CONSOLE);
         this.console = new ConsoleMK("Console", NUM_CONSOLE_TCP, PRIORITE_CONSOLE_SERVER_TCP, msgQ_Console, ihmApplication);        
         new Thread(console).start();
         
     	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM,""));
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "creation et lancement du thread de console"));
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement controleur"));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + " : creation et lancement du thread de console"));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + " : Lancement controleur"));
 
     	if (VERBOSE_LOCAL)
     		System.out.println("Lancement controleur");
     	
     	try {
-			socketServer = new ServerSocket(NUM_PORT_SERVER);	// creation de la socket du serveur
+			socketServer = new ServerSocket(NUM_PORT_SERVER);	// creation de la socket du serveur. on se met en ecoute sur le port indique
 		} catch (Exception e) {
 			// TODO Bloc catch g�n�r� automatiquement
 			e.printStackTrace();
 		}
-    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Lancement du serveur de socket " + socketServer));
+    	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + " : Lancement du serveur de socket " + socketServer));
     	
 
     	/**
@@ -115,12 +119,16 @@ public class ControlerConsoleTCPServer implements Controler, Constantes_SERVER_T
     	 * 
     	 */
     	while(true) {
-    		// on attent une demande de connexion venant d'un client
+    		// on attend une demande de connexion venant d'un client. Des reception d'une connexion, on lance un thread
+    		// pour gerer la communication client <-> serveur TCP
        		soc = socketServer.accept();
        		
        		// si une connexion se fait, on lance un thread de gestion de cette connexion client/serveur
-        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, "Le serveur : " + soc + "a accepte une connexion avec un client"));
-          	new Thread(new ServeurSocketTCP(this, soc)).start();
+        	console.sendMsgToConsole(new MsgToConsole(NUM_CONSOLE_SYSTEM, Thread.currentThread() + " : Le serveur : " + soc + "a accepte une connexion avec un client"));
+        	if (VERBOSE_LOCAL)
+        		System.out.println(Thread.currentThread() + " : une connexion vient d'etre accetee => on cree un Thread pour la gerer");
+
+        	new Thread(new ServeurSocketTCP(this, soc)).start();
     	}
 	}
 }

@@ -1,4 +1,4 @@
-package viewServeurCS;
+package fr.metakonsulting.serveurcs.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,11 +7,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controlerMVC.Controler;
-import controlerServeurCS.ControlerConsoleTCPServer;
-import utilitairesMK.Constantes_SERVER_TCP;
-import utilitairesMK_MVC.MsgToConsole;
-import viewMVC.IHM;
+import fr.metakonsulting.mvc.controler.Controler;
+import fr.metakonsulting.mvc.utilitaires.MsgToConsole;
+import fr.metakonsulting.mvc.view.IHM;
+import fr.metakonsulting.serveurcs.controler.ControlerConsoleTCPServer;
+import fr.metakonsulting.serveurcs.utilitaires.Constantes_SERVER_TCP;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -19,7 +19,6 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import javax.swing.SwingConstants;
-import javax.swing.text.Caret;
 import javax.swing.JProgressBar;
 
 public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP {
@@ -101,7 +100,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		this.controleur = controleur;
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1120, 851);
+		setBounds(100, 100, 1120, 1064);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -125,7 +124,7 @@ public class IHM_ConsoleTCP extends JFrame implements IHM, Constantes_SERVER_TCP
 		 * Zone SUD
 		 */
 		JScrollPane scrollPaneSUD = new JScrollPane();
-		scrollPaneSUD.setPreferredSize(new Dimension(5, 150));
+		scrollPaneSUD.setPreferredSize(new Dimension(5, 350));
 		contentPane.add(scrollPaneSUD, BorderLayout.SOUTH);
 		scrollPaneSUD.setViewportView(textAreaSud);
 		textAreaSud.setText("on est au SUD");
